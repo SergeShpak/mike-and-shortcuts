@@ -4,11 +4,6 @@ type Input struct {
 	Shortcuts []int
 }
 
-type Node struct {
-	Id          int
-	ChildrenIds map[int]struct{}
-}
-
 func CalculatePathEnergy(in *Input) []int {
 	nodes := make([][]int, len(in.Shortcuts))
 	for i := 0; i < len(in.Shortcuts); i++ {
