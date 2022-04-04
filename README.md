@@ -15,7 +15,7 @@ cat input.txt | ./solution
 To run the tests execute:
 
 ```bash
-go test ./...
+go test ./... -count=1
 ```
 
 You can find several test cases in [`samples`](./samples).

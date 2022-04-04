@@ -21,7 +21,6 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("failed to read the input: %w", err)
 	}
-	log.Println(in)
 	result := CalculatePathEnergy(in)
 	resultStrs := make([]string, 0, len(result))
 	for _, r := range result {

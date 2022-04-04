@@ -10,51 +10,43 @@ type Node struct {
 }
 
 func CalculatePathEnergy(in *Input) []int {
-	nodes := make([]*Node, len(in.Shortcuts))
+	nodes := make([][]int, len(in.Shortcuts))
 	for i := 0; i < len(in.Shortcuts); i++ {
-		nodes[i] = &Node{
-			Id:          i + 1,
-			ChildrenIds: make(map[int]struct{}),
-		}
+		nodes[i] = make([]int, 0)
 		if i != 0 {
-			nodes[i].ChildrenIds[nodes[i-1].Id] = struct{}{}
+			nodes[i] = append(nodes[i], i-1)
 		}
 	}
-	for i := 0; i < len(in.Shortcuts); i++ {
-		shortcutNodeId := in.Shortcuts[i]
-		currNode := nodes[shortcutNodeId-1]
-		childNode := nodes[i]
-		if currNode.Id == childNode.Id {
+	for i, s := range in.Shortcuts {
+		connectedNodeId := s - 1
+		if connectedNodeId == i+1 || connectedNodeId == i {
 			continue
 		}
-		currNode.ChildrenIds[childNode.Id] = struct{}{}
+		nodes[connectedNodeId] = append(nodes[connectedNodeId], i)
 	}
 	results := make(map[int]int)
 	for i := 0; i < len(nodes); i++ {
-		res := findPathLenToZero(nodes[i], nodes, results, 0)
-		results[i+1] = res
+		results[i] = findPathLenToZero(i, nodes, results, 0)
 	}
 	resultsSlice := make([]int, len(results))
 	for id, pathLen := range results {
-		resultsSlice[id-1] = pathLen
+		resultsSlice[id] = pathLen
 	}
 	return resultsSlice
 }
 
-func findPathLenToZero(n *Node, nodes []*Node, results map[int]int, acc int) int {
-	if len(n.ChildrenIds) == 0 {
+func findPathLenToZero(nId int, nodes [][]int, results map[int]int, acc int) int {
+	currNode := nodes[nId]
+	if len(currNode) == 0 {
 		return acc
 	}
-	if r, ok := results[n.Id]; ok {
+	if r, ok := results[nId]; ok {
 		return acc + r
 	}
 	acc += 1
 	min := -1
-	for c := range n.ChildrenIds {
-		if c == n.Id {
-			continue
-		}
-		res := findPathLenToZero(nodes[c-1], nodes, results, acc)
+	for _, c := range currNode {
+		res := findPathLenToZero(c, nodes, results, acc)
 		if min == -1 {
 			min = res
 			continue
